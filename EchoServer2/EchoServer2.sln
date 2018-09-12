@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EchoServer2", "EchoServer2\EchoServer2.csproj", "{395F7369-3837-49E6-B8EA-EFF59F1097EF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{395F7369-3837-49E6-B8EA-EFF59F1097EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{395F7369-3837-49E6-B8EA-EFF59F1097EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{395F7369-3837-49E6-B8EA-EFF59F1097EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{395F7369-3837-49E6-B8EA-EFF59F1097EF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
