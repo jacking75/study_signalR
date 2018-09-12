@@ -17,9 +17,49 @@ namespace WinFormServer
 {
     public partial class Form1 : Form
     {
+        System.Windows.Threading.DispatcherTimer dispatcherUITimer;
+
         public Form1()
         {
             InitializeComponent();
+
+            dispatcherUITimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherUITimer.Tick += new EventHandler(ProcessLog);
+            dispatcherUITimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            dispatcherUITimer.Start();
+        }
+
+        private void ProcessLog(object sender, EventArgs e)
+        {
+            // 너무 이 작업만 할 수 없으므로 일정 작업 이상을 하면 일단 패스한다.
+            int logWorkCount = 0;
+
+            while (true)
+            {
+                string msg;
+
+                if (DevLog.GetLog(out msg))
+                {
+                    ++logWorkCount;
+
+                    if (listBox1.Items.Count > 512)
+                    {
+                        listBox1.Items.Clear();
+                    }
+
+                    listBox1.Items.Add(msg);
+                    listBox1.SelectedIndex = listBox1.Items.Count - 1;
+                }
+                else
+                {
+                    break;
+                }
+
+                if (logWorkCount > 8)
+                {
+                    break;
+                }
+            }
         }
 
         public IWebHostBuilder CreateWebHostBuilder(string urlAddress) =>
