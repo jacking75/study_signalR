@@ -78,6 +78,8 @@ namespace WinFormServer
                 Task.Run(() => CreateWebHostBuilder(urlAddress).Build().Run());
 
                 button1.Enabled = false;
+
+                DevLog.Write("Start Server !!!", LOG_LEVEL.INFO);
             }
             catch(Exception ex)
             {
