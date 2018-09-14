@@ -19,7 +19,7 @@ namespace WebSocketSample
         private static async Task RunWebSockets()
         {
             var ws = new ClientWebSocket();
-            await ws.ConnectAsync(new Uri("ws://localhost:5000/chat/ws"), CancellationToken.None);
+            await ws.ConnectAsync(new Uri("ws://localhost:19000/EchoHub"), CancellationToken.None);
 
             Console.WriteLine("Connected");
 
