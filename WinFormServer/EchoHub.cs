@@ -40,9 +40,27 @@ namespace WinFormServer
 
         public Task Broadcast(string message)
         {
-            var timestamp = DateTime.Now.ToString();
-            return this.Clients.All.SendAsync("Receive", message, timestamp);
+            //var timestamp = DateTime.Now.ToString();
+            return this.Clients.All.SendAsync("Receive", "Broadcast", Context.ConnectionId, message);
         }
+
+
+        public Task DelayTast1()
+        {
+            Thread.Sleep(5000);
+
+            var timestamp = DateTime.Now.ToString();
+            return this.Clients.Caller.SendAsync("Receive", "DelayTast1", Context.ConnectionId, timestamp);
+        }
+
+        public async Task DelayTast2()
+        {
+            await Task.Delay(5000);
+            
+            var timestamp = DateTime.Now.ToString();
+            await this.Clients.Caller.SendAsync("Receive", "DelayTast2", Context.ConnectionId, timestamp);
+        }
+
 
         public Task SelfKickOff()
         {
