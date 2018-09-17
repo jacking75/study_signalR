@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 using Microsoft.AspNetCore.SignalR.Client;
 
-namespace EchoClient
+namespace ChatClient
 {
     public partial class Form1 : Form
     {
@@ -21,12 +21,41 @@ namespace EchoClient
             InitializeComponent();            
         }
 
+        async Task HubClosed(Exception ex)
+        {
+            await Task.Delay(2);
+
+            Invoke((Action)(() =>
+            {
+                listBox1.Items.Add("연결이 끊어졌다");
+
+                button1.Enabled = true;
+                button2.Enabled = false;
+                btnRoomChat.Enabled = false;
+            }));
+        }
+
+        void ResChangeNickName(ErrorCode error)
+        {
+            Invoke((Action)(() =>
+            {
+                listBox1.Items.Add($"닉네임 변경 요청 결과: {error.ToString()}");
+
+                if(error != ErrorCode.NONE)
+                {
+                    textBoxNickName.Text = "";
+                }
+            }));
+        }
+
         // 연결
         private async void button1_Click(object sender, EventArgs e)
         {
             connection = new HubConnectionBuilder()
                 .WithUrl(textBox1.Text)
                 .Build();
+
+            connection.Closed += HubClosed;
 
             connection.On<string, string>("Receive", (message, timestamp) =>
             {
@@ -38,7 +67,8 @@ namespace EchoClient
                 }));
             });
 
-            connection.Closed += HubClosed;
+            connection.On<ErrorCode>("ResChangeNickName", ResChangeNickName);           
+            
 
             try
             {
@@ -46,8 +76,7 @@ namespace EchoClient
                 listBox1.Items.Add("Connection started");
                 button1.Enabled = false;
                 button2.Enabled = true;
-                button3.Enabled = true;
-                button4.Enabled = true;
+                btnRoomChat.Enabled = true;
             }
             catch (Exception ex)
             {
@@ -61,32 +90,30 @@ namespace EchoClient
             await connection.StopAsync();            
         }
 
-        // 에코 보내기
+        // 방 채팅
         private async void button3_Click(object sender, EventArgs e)
         {
-            await connection.InvokeAsync("Broadcast", textBox2.Text);
-        }
-
-        async Task HubClosed(Exception ex)
+            await connection.InvokeAsync("Broadcast", textBoxReqChat.Text);
+        }               
+       
+        private void btnNickName_Click(object sender, EventArgs e)
         {
-            await Task.Delay(2);
 
-            Invoke((Action)(() =>
-            {
-                listBox1.Items.Add("연결이 끊어졌다");
-
-                button1.Enabled = true;
-                button2.Enabled = false;
-                button3.Enabled = false;
-                button4.Enabled = false;
-            }));            
         }
 
-        // 자신을 짤라달라고 서버에 요청
-        private async void button4_Click(object sender, EventArgs e)
+        // 방 입장
+        private void btnRoomEnter_Click(object sender, EventArgs e)
         {
-            await connection.InvokeAsync("SelfKickOff");
+
         }
+
+        // 방 나가기
+        private void btnRoomLeave_Click(object sender, EventArgs e)
+        {
+
+        }
+        
+        //textBoxNickName textBoxNickName textBoxRoomNumber   textBoxReqChat  listBoxChat
     }
 }
 

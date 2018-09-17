@@ -9,68 +9,103 @@ namespace ChatServer
 {
     public class ChatHub : Hub
     {
-        readonly RoomManager roomManager;
+        readonly RoomManager RoomMgr;
 
         public ChatHub(RoomManager _roomManager)
         {
-            roomManager = _roomManager;
+            RoomMgr = _roomManager;
         }
 
-        //public override async Task OnConnectedAsync()
-        //{
-        //    await Clients.All.SendAsync("Send", $"{Context.ConnectionId} joined");
-        //}
-
-        //public override async Task OnDisconnectedAsync(Exception ex)
-        //{
-        //    await Clients.Others.SendAsync("Send", $"{Context.ConnectionId} left");
-        //}
-
-        // 모두에게
-        public Task SendBroadCast(string message)
+        public override Task OnConnectedAsync()
         {
-            return Clients.All.SendAsync("Send", $"{Context.ConnectionId}: {message}");
+            RoomMgr.NewConnectedClient(Context.ConnectionId);
+
+            Console.WriteLine($"New Connected Client: {Context.ConnectionId}");
+            return Task.CompletedTask;
         }
 
-        // 나 이외의 모든 클라에게
-        public Task SendToOthers(string message)
+        public override Task OnDisconnectedAsync(Exception ex)
         {
-            return Clients.Others.SendAsync("Send", $"{Context.ConnectionId}: {message}");
+            RoomMgr.DisConnectedClient(Context.ConnectionId);
+
+            Console.WriteLine($"DisConnected Client: {Context.ConnectionId}");
+            return Task.CompletedTask;
         }
 
-        //귓속말
-        public Task SendToConnection(string connectionId, string message)
+
+        // 닉네임 설정
+        public Task ChangeNickName(string nickName)
         {
-            return Clients.Client(connectionId).SendAsync("Send", $"Private message from {Context.ConnectionId}: {message}");
+            return Clients.Caller.SendAsync("ResChangeNickName", ErrorCode.NONE);
         }
 
-        public Task SendToGroup(string groupName, string message)
+        // 방 입장
+        public async Task RoomEnter(int roomNumber)
         {
-            return Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId}@{groupName}: {message}");
-        }
+            if(RoomMgr.ValidRoomNumber(roomNumber) == false)
+            {
+                await Clients.Caller.SendAsync("ResChangeNickName", ErrorCode.ROOM_ENTER_INVALID_ROOM_NUMBER);
+            }
 
-        public Task SendToOthersInGroup(string groupName, string message)
-        {
-            return Clients.OthersInGroup(groupName).SendAsync("Send", $"{Context.ConnectionId}@{groupName}: {message}");
-        }
+            var result = RoomMgr.UserEnterRoom(Context.ConnectionId, roomNumber);
 
-        public async Task JoinGroup(string groupName)
-        {
+            var groupName = roomNumber.ToString();
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
-            await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} joined {groupName}");
+            await Clients.Caller.SendAsync("ResRoomEnter", result);
         }
 
-        public async Task LeaveGroup(string groupName)
+        // 방 나가기
+        public async Task RoomLeave()
         {
-            await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} left {groupName}");
+            var result = RoomMgr.UserLeaveRoom(Context.ConnectionId);
+            await Clients.Caller.SendAsync("ResRoomLeave", result.Item2);
 
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+            if (result.Item2 == ErrorCode.NONE)
+            {
+                var groupName = result.Item1.ToString();
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+            }
         }
 
-        public Task Echo(string message)
+        // 방 채팅
+        public Task RoomChat(string message)
         {
-            return Clients.Caller.SendAsync("Send", $"{Context.ConnectionId}: {message}");
+            var roomNumber = RoomMgr.UserRoomNumber(Context.ConnectionId);
+
+            if( roomNumber == -1)
+            {
+                return Clients.Caller.SendAsync("ResRoomChat", ErrorCode.ROOM_CHAT_NOT_IN_ROOM);
+            }
+            else
+            {
+                Clients.Caller.SendAsync("ResRoomChat", ErrorCode.NONE);
+            }
+
+            // 특정 유저만 제외하고 싶은 경우
+            //AllExcept(IReadOnlyList<string> excludedConnectionIds);
+
+            return Clients.GroupExcept(roomNumber.ToString(), Context.ConnectionId).SendAsync("NtfRoomChat", ErrorCode.NONE);
         }
+
+
+
+        // 모두에게
+        // return Clients.All.SendAsync("Send", $"{Context.ConnectionId}: {message}");
+
+        // 나 이외의 모든 클라에게
+        // return Clients.Others.SendAsync("Send", $"{Context.ConnectionId}: {message}");
+
+        // 지정한 클라이언트에만 보내기
+        // return Clients.Client(connectionId).SendAsync("Send", $"Private message from {Context.ConnectionId}: {message}");
+
+        // 그룹 내의 모든 클라에게
+        // return Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId}@{groupName}: {message}");
+
+        // 특정 그룹을 제외한 모든 클라에게
+        // return Clients.OthersInGroup(groupName).SendAsync("Send", $"{Context.ConnectionId}@{groupName}: {message}");
+
+        // 모든 클라이언트에게 통보
+        // return Clients.Caller.SendAsync("Send", $"{Context.ConnectionId}: {message}");       
     }
 }
