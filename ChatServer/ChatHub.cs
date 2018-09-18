@@ -44,7 +44,8 @@ namespace ChatServer
         {
             if(RoomMgr.ValidRoomNumber(roomNumber) == false)
             {
-                await Clients.Caller.SendAsync("ResChangeNickName", ErrorCode.ROOM_ENTER_INVALID_ROOM_NUMBER);
+                await Clients.Caller.SendAsync("ResRoomEnter", ErrorCode.ROOM_ENTER_INVALID_ROOM_NUMBER);
+                return;
             }
 
             var result = RoomMgr.UserEnterRoom(Context.ConnectionId, roomNumber);
@@ -71,6 +72,7 @@ namespace ChatServer
         // 방 채팅
         public Task RoomChat(string message)
         {
+            var nickName = Context.ConnectionId;
             var roomNumber = RoomMgr.UserRoomNumber(Context.ConnectionId);
 
             if( roomNumber == -1)
@@ -79,13 +81,11 @@ namespace ChatServer
             }
             else
             {
+                nickName = RoomMgr.GetUserNickName(Context.ConnectionId);
                 Clients.Caller.SendAsync("ResRoomChat", ErrorCode.NONE);
-            }
+            }            
 
-            // 특정 유저만 제외하고 싶은 경우
-            //AllExcept(IReadOnlyList<string> excludedConnectionIds);
-
-            return Clients.GroupExcept(roomNumber.ToString(), Context.ConnectionId).SendAsync("NtfRoomChat", ErrorCode.NONE);
+            return Clients.GroupExcept(roomNumber.ToString(), Context.ConnectionId).SendAsync("NtfRoomChat", nickName, message);
         }
 
 
@@ -95,6 +95,9 @@ namespace ChatServer
 
         // 나 이외의 모든 클라에게
         // return Clients.Others.SendAsync("Send", $"{Context.ConnectionId}: {message}");
+
+        // 특정 유저만 제외하고 싶은 경우
+        //AllExcept(IReadOnlyList<string> excludedConnectionIds);
 
         // 지정한 클라이언트에만 보내기
         // return Clients.Client(connectionId).SendAsync("Send", $"Private message from {Context.ConnectionId}: {message}");

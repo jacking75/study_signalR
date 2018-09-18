@@ -38,10 +38,10 @@
             this.btnRoomEnter = new System.Windows.Forms.Button();
             this.btnRoomLeave = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnNickName = new System.Windows.Forms.Button();
+            this.textBoxNickName = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.listBoxChat = new System.Windows.Forms.ListBox();
-            this.textBoxNickName = new System.Windows.Forms.TextBox();
-            this.btnNickName = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -83,16 +83,16 @@
             this.textBoxReqChat.Location = new System.Drawing.Point(13, 59);
             this.textBoxReqChat.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxReqChat.Name = "textBoxReqChat";
-            this.textBoxReqChat.Size = new System.Drawing.Size(579, 25);
+            this.textBoxReqChat.Size = new System.Drawing.Size(510, 25);
             this.textBoxReqChat.TabIndex = 4;
             // 
             // btnRoomChat
             // 
             this.btnRoomChat.Enabled = false;
-            this.btnRoomChat.Location = new System.Drawing.Point(519, 21);
+            this.btnRoomChat.Location = new System.Drawing.Point(529, 56);
             this.btnRoomChat.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnRoomChat.Name = "btnRoomChat";
-            this.btnRoomChat.Size = new System.Drawing.Size(73, 32);
+            this.btnRoomChat.Size = new System.Drawing.Size(67, 32);
             this.btnRoomChat.TabIndex = 5;
             this.btnRoomChat.Text = "채팅";
             this.btnRoomChat.UseVisualStyleBackColor = true;
@@ -153,6 +153,25 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "서버 접속";
             // 
+            // btnNickName
+            // 
+            this.btnNickName.Enabled = false;
+            this.btnNickName.Location = new System.Drawing.Point(496, 22);
+            this.btnNickName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnNickName.Name = "btnNickName";
+            this.btnNickName.Size = new System.Drawing.Size(100, 32);
+            this.btnNickName.TabIndex = 5;
+            this.btnNickName.Text = "닉네임 변경";
+            this.btnNickName.UseVisualStyleBackColor = true;
+            this.btnNickName.Click += new System.EventHandler(this.btnNickName_Click);
+            // 
+            // textBoxNickName
+            // 
+            this.textBoxNickName.Location = new System.Drawing.Point(392, 26);
+            this.textBoxNickName.Name = "textBoxNickName";
+            this.textBoxNickName.Size = new System.Drawing.Size(102, 25);
+            this.textBoxNickName.TabIndex = 4;
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.listBoxChat);
@@ -176,25 +195,6 @@
             this.listBoxChat.Name = "listBoxChat";
             this.listBoxChat.Size = new System.Drawing.Size(579, 199);
             this.listBoxChat.TabIndex = 10;
-            // 
-            // textBoxNickName
-            // 
-            this.textBoxNickName.Location = new System.Drawing.Point(392, 26);
-            this.textBoxNickName.Name = "textBoxNickName";
-            this.textBoxNickName.Size = new System.Drawing.Size(102, 25);
-            this.textBoxNickName.TabIndex = 4;
-            // 
-            // btnNickName
-            // 
-            this.btnNickName.Enabled = false;
-            this.btnNickName.Location = new System.Drawing.Point(496, 22);
-            this.btnNickName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnNickName.Name = "btnNickName";
-            this.btnNickName.Size = new System.Drawing.Size(100, 32);
-            this.btnNickName.TabIndex = 5;
-            this.btnNickName.Text = "닉네임 변경";
-            this.btnNickName.UseVisualStyleBackColor = true;
-            this.btnNickName.Click += new System.EventHandler(this.btnNickName_Click);
             // 
             // Form1
             // 

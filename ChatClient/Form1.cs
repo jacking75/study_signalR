@@ -31,6 +31,7 @@ namespace ChatClient
 
                 button1.Enabled = true;
                 button2.Enabled = false;
+                btnNickName.Enabled = false;
                 btnRoomChat.Enabled = false;
             }));
         }
@@ -47,6 +48,56 @@ namespace ChatClient
                 }
             }));
         }
+
+        void ResRoomEnter(ErrorCode error)
+        {
+            Invoke((Action)(() =>
+            {
+                listBox1.Items.Add($"방 입장 요청 결과: {error.ToString()}");
+
+                if (error != ErrorCode.NONE)
+                {
+                    textBoxRoomNumber.Text = "-1";
+                }
+            }));
+        }
+
+        void ResRoomLeave(ErrorCode error)
+        {
+            Invoke((Action)(() =>
+            {
+                listBox1.Items.Add($"방 나가기 요청 결과: {error.ToString()}");
+
+                if (error == ErrorCode.NONE)
+                {
+                    textBoxRoomNumber.Text = "-1";
+                }
+            }));
+        }
+
+        void ResRoomChat(ErrorCode error)
+        {
+            Invoke((Action)(() =>
+            {
+                listBox1.Items.Add($"방 채팅 요청 결과: {error.ToString()}");
+
+                if (error == ErrorCode.NONE)
+                {
+                    listBoxChat.Items.Add(textBoxReqChat.Text);
+                    textBoxReqChat.Text = "";
+                }                
+            }));
+        }
+
+        void NtfRoomChat(string nickName, string message)
+        {
+            Invoke((Action)(() =>
+            {
+                listBoxChat.Items.Add($"{nickName}: {message}");                
+            }));
+        }
+
+
 
         // 연결
         private async void button1_Click(object sender, EventArgs e)
@@ -67,8 +118,12 @@ namespace ChatClient
                 }));
             });
 
-            connection.On<ErrorCode>("ResChangeNickName", ResChangeNickName);           
-            
+            connection.On<ErrorCode>("ResChangeNickName", ResChangeNickName);
+            connection.On<ErrorCode>("ResRoomEnter", ResRoomEnter);
+            connection.On<ErrorCode>("ResRoomLeave", ResRoomLeave);
+            connection.On<ErrorCode>("ResRoomChat", ResRoomChat);
+            connection.On<string, string>("NtfRoomChat", NtfRoomChat);
+
 
             try
             {
@@ -77,6 +132,7 @@ namespace ChatClient
                 button1.Enabled = false;
                 button2.Enabled = true;
                 btnRoomChat.Enabled = true;
+                btnNickName.Enabled = true;
             }
             catch (Exception ex)
             {
@@ -93,27 +149,28 @@ namespace ChatClient
         // 방 채팅
         private async void button3_Click(object sender, EventArgs e)
         {
-            await connection.InvokeAsync("Broadcast", textBoxReqChat.Text);
+            await connection.InvokeAsync("RoomChat", textBoxReqChat.Text);
         }               
        
-        private void btnNickName_Click(object sender, EventArgs e)
+        private async void btnNickName_Click(object sender, EventArgs e)
         {
-
+            await connection.InvokeAsync("ChangeNickName", textBoxNickName.Text);
         }
 
         // 방 입장
-        private void btnRoomEnter_Click(object sender, EventArgs e)
+        private async void btnRoomEnter_Click(object sender, EventArgs e)
         {
-
+            var roomNumber = textBoxRoomNumber.Text.ToInt32();
+            await connection.InvokeAsync("RoomEnter", roomNumber);
         }
 
         // 방 나가기
-        private void btnRoomLeave_Click(object sender, EventArgs e)
+        private async void btnRoomLeave_Click(object sender, EventArgs e)
         {
-
+            await connection.InvokeAsync("RoomLeave");
         }
         
-        //textBoxNickName textBoxNickName textBoxRoomNumber   textBoxReqChat  listBoxChat
+        
     }
 }
 

@@ -111,5 +111,15 @@ namespace ChatServer
             return userInfo.GetRoomNumber();
         }
 
+        public string GetUserNickName(string connectedId)
+        {
+            if(ConnectedUsers.TryGetValue(connectedId, out var userInfo))
+            {
+                return userInfo.GetNickName();
+            }
+
+            return "";
+        }
+
     }
 }

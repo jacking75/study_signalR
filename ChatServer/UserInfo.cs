@@ -17,6 +17,7 @@ namespace ChatServer
         public UserInfo(string connectId)
         {
             ConnecteId = connectId;
+            NickName = connectId;
         }
 
         public void ChangeNickName(string nickName)
@@ -41,6 +42,7 @@ namespace ChatServer
 
         public int GetRoomNumber() { return RoomNumber;  }
 
+        public string GetNickName() { return NickName;  }
 
 
     }
