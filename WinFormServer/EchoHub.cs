@@ -45,16 +45,20 @@ namespace WinFormServer
         }
 
 
-        public Task DelayTast1()
+        public Task DelayTast1(int Seq)
         {
+            DevLog.Write($"Call DelayTast1(Sleep). Client: {Context.ConnectionId}, Seq: {Seq}", LOG_LEVEL.INFO);
+
             Thread.Sleep(5000);
 
             var timestamp = DateTime.Now.ToString();
             return this.Clients.Caller.SendAsync("Receive", "DelayTast1", Context.ConnectionId, timestamp);
         }
 
-        public async Task DelayTast2()
+        public async Task DelayTast2(int Seq)
         {
+            DevLog.Write($"Call DelayTast2(Task.Delay). Client: {Context.ConnectionId}, Seq: {Seq}", LOG_LEVEL.INFO);
+
             await Task.Delay(5000);
             
             var timestamp = DateTime.Now.ToString();

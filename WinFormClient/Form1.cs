@@ -16,6 +16,9 @@ namespace EchoClient
     {
         HubConnection connection;
 
+        int Seq1 = 0;
+        int Seq2 = 0;
+
         public Form1()
         {
             InitializeComponent();            
@@ -94,10 +97,11 @@ namespace EchoClient
 
         // 서버에 부하가 큰 일을 요청. 서버는 Thread.Sleep 사용
         private async void button5_Click(object sender, EventArgs e)
-        {
+        {            
             listBox1.Items.Add("Request Heavy Work 1");
 
-            await connection.InvokeAsync("DelayTast1");
+            ++Seq1;
+            await connection.InvokeAsync("DelayTast1", Seq1);
         }
 
         // 서버에 부하가 큰 일을 요청. 서버는 async/await 사용
@@ -105,7 +109,8 @@ namespace EchoClient
         {
             listBox1.Items.Add("Request Heavy Work 2");
 
-            await connection.InvokeAsync("DelayTast2");
+            ++Seq2;
+            await connection.InvokeAsync("DelayTast2", Seq2);
         }
     }
 }
